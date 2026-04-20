@@ -12,6 +12,10 @@ from .scenarios import (
     reset_demo_data,
     start_live_session,
 )
+from .backfill import (
+    backfill_all_missing,
+    backfill_messages_for_session,
+)
 
 __all__ = [
     "create_session",
@@ -26,4 +30,6 @@ __all__ = [
     "run_scenario",
     "reset_demo_data",
     "start_live_session",
+    "backfill_all_missing",
+    "backfill_messages_for_session",
 ]

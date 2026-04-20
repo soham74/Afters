@@ -1,0 +1,49 @@
+# Keep build context lean. These get rebuilt inside the image.
+**/node_modules
+**/.pnpm-store
+
+# build artifacts
+**/dist
+**/.next
+**/out
+**/build
+**/*.tsbuildinfo
+
+# python
+**/__pycache__
+**/*.py[cod]
+**/.venv
+**/venv
+**/*.egg-info
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+
+# secrets and local env. Railway injects env vars at runtime.
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+**/.env.*.local
+
+# git + editor + os
+.git
+.gitignore
+.github
+.vscode
+.idea
+**/.DS_Store
+**/*.swp
+
+# logs
+**/*.log
+
+# misc
+**/coverage
+**/data
+**/dump
+Dockerfile
+**/Dockerfile
+.dockerignore
+README.md

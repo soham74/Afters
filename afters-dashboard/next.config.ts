@@ -10,6 +10,11 @@ const config: NextConfig = {
   reactStrictMode: true,
   transpilePackages: ["afters-shared"],
   typedRoutes: false,
+  // Standalone output: produces .next/standalone with a self-contained
+  // server.js + minimal node_modules so the Docker runtime stage stays small.
+  // outputFileTracingRoot tells Next where the monorepo root is so workspace
+  // deps (afters-shared) get traced into the standalone bundle correctly.
+  output: "standalone",
   outputFileTracingRoot: monorepoRoot,
   env: {
     NEXT_PUBLIC_ORCHESTRATOR_BASE_URL:

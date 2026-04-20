@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
 
     mongodb_uri: str = "mongodb://localhost:27017/afters"
+    mongo_db_name_override: str = ""
     redis_url: str = "redis://localhost:6379"
 
     mock_llm: bool = False
@@ -36,8 +37,16 @@ class Settings(BaseSettings):
 
     @property
     def mongo_db_name(self) -> str:
+        # explicit override takes priority (needed for Railway-style URIs without a db path)
+        if self.mongo_db_name_override:
+            return self.mongo_db_name_override
         # pull last path segment from the URI
-        return self.mongodb_uri.rstrip("/").rsplit("/", 1)[-1] or "afters"
+        candidate = self.mongodb_uri.rstrip("/").rsplit("/", 1)[-1] or "afters"
+        # safety: if the candidate contains invalid mongo db name characters,
+        # fall back to the default
+        if any(c in candidate for c in ".$/\\ \""):
+            return "afters"
+        return candidate
 
 
 @lru_cache(maxsize=1)

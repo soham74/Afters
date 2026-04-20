@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://afters.ditto.local/schemas/agent_trace.schema.json",
+  "title": "AgentTrace",
+  "description": "One row per agent invocation (LLM or deterministic) OR per human-in-the-loop action. Drives the Traces view and the per-session expandables.",
+  "type": "object",
+  "required": ["_id", "agent_name", "kind", "input_summary", "tokens_in", "tokens_out", "cost_usd", "latency_ms", "summary", "created_at"],
+  "properties": {
+    "_id": { "type": "string" },
+    "session_id": { "type": ["string", "null"] },
+    "agent_name": { "type": "string" },
+    "kind": { "type": "string", "enum": ["llm", "deterministic", "human_feedback"] },
+    "model": { "type": ["string", "null"] },
+    "input_summary": { "type": "string" },
+    "prompt": { "type": ["string", "null"] },
+    "output": {},
+    "tokens_in": { "type": "integer", "minimum": 0 },
+    "tokens_out": { "type": "integer", "minimum": 0 },
+    "cost_usd": { "type": "number", "minimum": 0 },
+    "latency_ms": { "type": "integer", "minimum": 0 },
+    "summary": { "type": "string" },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

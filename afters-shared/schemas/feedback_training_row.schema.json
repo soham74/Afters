@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://afters.ditto.local/schemas/feedback_training_row.schema.json",
+  "title": "FeedbackTrainingRow",
+  "description": "One row of learning-to-rank training data emitted by the Scoring Agent when a session resolves. Accumulated in afters-orchestrator/feedback_training.jsonl.",
+  "type": "object",
+  "required": ["session_id", "match_id", "campus", "compatibility_score_pre", "user_a_wanted_second", "user_b_wanted_second", "user_a_interest", "user_b_interest", "outcome", "venue_tags", "label_success", "created_at"],
+  "properties": {
+    "session_id": { "type": "string" },
+    "match_id": { "type": "string" },
+    "campus": { "type": "string", "enum": ["UC Berkeley", "UC San Diego", "UCLA", "USC", "UC Davis", "San Jose State"] },
+    "compatibility_score_pre": { "type": "number" },
+    "user_a_wanted_second": { "type": "boolean" },
+    "user_b_wanted_second": { "type": "boolean" },
+    "user_a_interest": { "type": "integer" },
+    "user_b_interest": { "type": "integer" },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "both_again",
+        "both_group",
+        "both_pass",
+        "asymmetric_again_group",
+        "asymmetric_again_pass",
+        "asymmetric_group_pass",
+        "timed_out"
+      ]
+    },
+    "venue_tags": { "type": "array", "items": { "type": "string" } },
+    "time_to_resolution_hours": { "type": ["number", "null"] },
+    "shared_moments": { "type": "array", "items": { "type": "string" } },
+    "concerns": { "type": "array", "items": { "type": "string" } },
+    "label_success": { "type": "boolean" },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "afters",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Afters: post-date mutual-reveal flow for Ditto. Takehome project by Soham Kolhe.",
+  "scripts": {
+    "dev": "concurrently -n orch,msg,dash -c blue,green,magenta \"pnpm dev:orchestrator\" \"pnpm dev:messaging\" \"pnpm dev:dashboard\"",
+    "dev:dashboard": "pnpm --filter afters-dashboard dev",
+    "dev:messaging": "pnpm --filter afters-messaging dev",
+    "dev:orchestrator": "cd afters-orchestrator && uvicorn afters.main:app --reload --port 8000",
+    "build": "pnpm -r run build",
+    "codegen": "pnpm --filter afters-shared run codegen && cd afters-orchestrator && python -m scripts.codegen_pydantic",
+    "seed": "cd afters-orchestrator && python -m scripts.seed",
+    "scenario": "cd afters-orchestrator && python -m scripts.run_scenario",
+    "eval": "cd afters-orchestrator && python -m evals.run_evals",
+    "infra:up": "docker compose up -d mongo redis",
+    "infra:down": "docker compose down",
+    "infra:reset": "docker compose down -v && docker compose up -d mongo redis"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=20"
+  }
+}

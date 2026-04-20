@@ -1,0 +1,51 @@
+[project]
+name = "afters-orchestrator"
+version = "0.1.0"
+description = "Afters orchestrator: FastAPI + LangGraph state machine for post-date mutual-reveal flow."
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.32.0",
+  "motor>=3.6.0",
+  "pymongo>=4.9.0",
+  "redis[hiredis]>=5.1.0",
+  "anthropic>=0.39.0",
+  "pydantic>=2.9.0",
+  "pydantic-settings>=2.5.0",
+  "python-dotenv>=1.0.0",
+  "langgraph>=0.2.39",
+  "langchain-core>=0.3.15",
+  "httpx>=0.27.0",
+  "structlog>=24.4.0",
+  "orjson>=3.10.0",
+  "python-multipart>=0.0.12",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0",
+  "pytest-asyncio>=0.24.0",
+  "ruff>=0.7.0",
+  "datamodel-code-generator>=0.26.0",
+]
+
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["afters*"]
+exclude = ["evals*", "scripts*", "tests*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "C4", "SIM"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests", "evals"]

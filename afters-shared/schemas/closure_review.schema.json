@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://afters.ditto.local/schemas/closure_review.schema.json",
+  "title": "ClosureReview",
+  "description": "Human-in-the-loop review entry for a draft Closure Agent message in the asymmetric branches. Reviewers approve, edit, or reject the draft. Every reviewer action writes an agent_trace of kind=human_feedback.",
+  "type": "object",
+  "required": ["_id", "session_id", "recipient_user_id", "recipient_name", "draft_message", "regeneration_count", "status", "created_at"],
+  "properties": {
+    "_id": { "type": "string" },
+    "session_id": { "type": "string" },
+    "recipient_user_id": { "type": "string" },
+    "recipient_name": { "type": "string" },
+    "draft_message": { "type": "string" },
+    "regeneration_count": { "type": "integer", "minimum": 0 },
+    "status": { "type": "string", "enum": ["pending", "approved", "edited", "rejected_fallback"] },
+    "final_message": { "type": ["string", "null"] },
+    "reviewer_action_at": { "type": ["string", "null"], "format": "date-time" },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

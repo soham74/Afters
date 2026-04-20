@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://afters.ditto.local/schemas/afters_session.schema.json",
+  "title": "AftersSession",
+  "description": "A post-date mutual-reveal session for a pair of Ditto users who just completed a first date. This schema is the single source of truth consumed by both the TypeScript services (dashboard, messaging) and the Python orchestrator (via datamodel-code-generator).",
+  "type": "object",
+  "required": [
+    "_id",
+    "date_id",
+    "match_id",
+    "campus",
+    "participants",
+    "state",
+    "created_at",
+    "timeout_at"
+  ],
+  "properties": {
+    "_id": {
+      "type": "string",
+      "description": "Mongo ObjectId as hex string."
+    },
+    "date_id": {
+      "type": "string"
+    },
+    "match_id": {
+      "type": "string"
+    },
+    "campus": {
+      "type": "string",
+      "enum": ["UC Berkeley", "UC San Diego", "UCLA", "USC", "UC Davis", "San Jose State"]
+    },
+    "participants": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": { "$ref": "#/definitions/ParticipantDebrief" }
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "awaiting_first_response",
+        "awaiting_second_response",
+        "mutual_reveal_ready",
+        "resolving",
+        "resolved",
+        "closed"
+      ]
+    },
+    "resolved_outcome": {
+      "type": ["string", "null"],
+      "enum": [
+        "both_again",
+        "both_group",
+        "both_pass",
+        "asymmetric_again_group",
+        "asymmetric_again_pass",
+        "asymmetric_group_pass",
+        "timed_out",
+        null
+      ]
+    },
+    "resolved_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "timeout_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "closure_review_id": {
+      "type": ["string", "null"]
+    },
+    "second_date_id": {
+      "type": ["string", "null"]
+    },
+    "group_queue_entry_ids": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "definitions": {
+    "ParticipantDebrief": {
+      "type": "object",
+      "required": ["user_id", "response_state"],
+      "properties": {
+        "user_id": { "type": "string" },
+        "response_state": {
+          "type": "string",
+          "enum": ["pending", "submitted", "revealed"]
+        },
+        "choice": {
+          "type": ["string", "null"],
+          "enum": ["again", "group", "pass", null]
+        },
+        "interest_level": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 10
+        },
+        "memorable_moments": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "concerns": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "wants_second_date": { "type": ["boolean", "null"] },
+        "willing_to_group_hang": { "type": ["boolean", "null"] },
+        "free_text_note": { "type": ["string", "null"] },
+        "voice_note_ref": { "type": ["string", "null"] },
+        "raw_reply_text": { "type": ["string", "null"] },
+        "submitted_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

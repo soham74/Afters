@@ -1,0 +1,4 @@
+packages:
+  - "afters-dashboard"
+  - "afters-messaging"
+  - "afters-shared"

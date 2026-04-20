@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://afters.ditto.local/schemas/message.schema.json",
+  "title": "Message",
+  "type": "object",
+  "required": ["_id", "user_id", "direction", "body", "kind", "created_at"],
+  "properties": {
+    "_id": { "type": "string" },
+    "user_id": { "type": "string" },
+    "direction": { "type": "string", "enum": ["outbound", "inbound"] },
+    "body": { "type": "string" },
+    "kind": { "type": "string", "enum": ["text", "voice_note", "card"] },
+    "card_meta": { "type": ["object", "null"], "additionalProperties": true },
+    "session_id": { "type": ["string", "null"] },
+    "created_at": { "type": "string", "format": "date-time" }
+  }
+}

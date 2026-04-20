@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://afters.ditto.local/schemas/match.schema.json",
+  "title": "Match",
+  "type": "object",
+  "required": ["_id", "user_a_id", "user_b_id", "campus", "compatibility_score", "explanation", "matched_at"],
+  "properties": {
+    "_id": { "type": "string" },
+    "user_a_id": { "type": "string" },
+    "user_b_id": { "type": "string" },
+    "campus": { "type": "string", "enum": ["UC Berkeley", "UC San Diego", "UCLA", "USC", "UC Davis", "San Jose State"] },
+    "compatibility_score": { "type": "number", "minimum": 0, "maximum": 1 },
+    "explanation": { "type": "string" },
+    "matched_at": { "type": "string", "format": "date-time" }
+  }
+}

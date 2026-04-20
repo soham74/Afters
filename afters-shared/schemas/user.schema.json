@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://afters.ditto.local/schemas/user.schema.json",
+  "title": "User",
+  "type": "object",
+  "required": ["_id", "name", "edu_email", "campus", "year", "pronouns", "profile", "avatar_color"],
+  "properties": {
+    "_id": { "type": "string" },
+    "name": { "type": "string" },
+    "edu_email": { "type": "string", "format": "email" },
+    "campus": { "type": "string", "enum": ["UC Berkeley", "UC San Diego", "UCLA", "USC", "UC Davis", "San Jose State"] },
+    "year": { "type": "string", "enum": ["freshman", "sophomore", "junior", "senior", "grad"] },
+    "pronouns": { "type": "string" },
+    "profile": {
+      "type": "object",
+      "required": ["preferences", "interests", "persona_summary"],
+      "properties": {
+        "preferences": { "type": "array", "items": { "type": "string" } },
+        "interests": { "type": "array", "items": { "type": "string" } },
+        "persona_summary": { "type": "string" }
+      }
+    },
+    "avatar_color": { "type": "string" },
+    "is_historical": { "type": "boolean" }
+  }
+}

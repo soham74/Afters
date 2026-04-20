@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://afters.ditto.local/schemas/venue.schema.json",
+  "title": "Venue",
+  "type": "object",
+  "required": ["_id", "name", "campus", "type", "tags", "vibe", "address", "price_level", "walking_distance_from_campus_min"],
+  "properties": {
+    "_id": { "type": "string" },
+    "name": { "type": "string" },
+    "campus": { "type": "string", "enum": ["UC Berkeley", "UC San Diego", "UCLA", "USC", "UC Davis", "San Jose State"] },
+    "type": { "type": "string" },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "vibe": { "type": "string" },
+    "address": { "type": "string" },
+    "price_level": { "type": "integer", "minimum": 1, "maximum": 3 },
+    "walking_distance_from_campus_min": { "type": "integer", "minimum": 0 }
+  }
+}

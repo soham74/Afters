@@ -1,0 +1,48 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# build
+.next/
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# test
+coverage/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# mongo / redis data (if run outside docker)
+data/
+dump/
+
+# generated python models (regenerate via codegen)
+afters-orchestrator/afters/models/_generated.py

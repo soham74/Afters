@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://afters.ditto.local/schemas/date.schema.json",
+  "title": "DateRecord",
+  "type": "object",
+  "required": ["_id", "match_id", "venue_id", "scheduled_for", "status", "campus"],
+  "properties": {
+    "_id": { "type": "string" },
+    "match_id": { "type": "string" },
+    "venue_id": { "type": "string" },
+    "scheduled_for": { "type": "string", "format": "date-time" },
+    "status": { "type": "string", "enum": ["scheduled", "completed", "canceled"] },
+    "completed_at": { "type": ["string", "null"], "format": "date-time" },
+    "canceled_reason": { "type": ["string", "null"] },
+    "campus": { "type": "string", "enum": ["UC Berkeley", "UC San Diego", "UCLA", "USC", "UC Davis", "San Jose State"] }
+  }
+}

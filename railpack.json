@@ -1,0 +1,23 @@
+{
+  "$schema": "https://schema.railpack.com",
+  "provider": "node",
+  "packages": {
+    "node": "20",
+    "pnpm": "9.12.0"
+  },
+  "steps": {
+    "install": {
+      "commands": [
+        "pnpm install --frozen-lockfile"
+      ]
+    },
+    "build": {
+      "commands": [
+        "pnpm --filter afters-messaging build"
+      ]
+    }
+  },
+  "deploy": {
+    "startCommand": "cd afters-messaging && node dist/main.js"
+  }
+}

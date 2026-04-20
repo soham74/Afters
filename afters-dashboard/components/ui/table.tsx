@@ -1,7 +1,16 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export const Table = ({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
+// Each subcomponent uses the React attribute type that matches its underlying
+// HTML element so table-specific attributes (colSpan, rowSpan, scope, headers,
+// align) flow through the prop spread instead of being rejected by the type
+// checker. The previous version typed everything as React.HTMLAttributes<...>
+// which is the generic shape and excludes those table-only props.
+
+export const Table = ({
+  className,
+  ...props
+}: React.TableHTMLAttributes<HTMLTableElement>) => (
   <div className="relative w-full overflow-auto">
     <table className={cn("w-full caption-bottom text-sm", className)} {...props} />
   </div>
@@ -37,7 +46,7 @@ export const TableRow = ({
 export const TableHead = ({
   className,
   ...props
-}: React.HTMLAttributes<HTMLTableCellElement>) => (
+}: React.ThHTMLAttributes<HTMLTableCellElement>) => (
   <th
     className={cn(
       "h-9 px-3 text-left align-middle text-xs font-medium text-ink-muted uppercase tracking-wider",
@@ -50,6 +59,6 @@ export const TableHead = ({
 export const TableCell = ({
   className,
   ...props
-}: React.HTMLAttributes<HTMLTableCellElement>) => (
+}: React.TdHTMLAttributes<HTMLTableCellElement>) => (
   <td className={cn("px-3 py-3 align-middle", className)} {...props} />
 );

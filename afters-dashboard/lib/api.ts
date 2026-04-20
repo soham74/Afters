@@ -59,6 +59,8 @@ export const api = {
     agent_name?: string;
     session_id?: string;
     limit?: number;
+    sort?: string;
+    direction?: number;
   } = {}) => {
     const qs = new URLSearchParams();
     Object.entries(params).forEach(([k, v]) => {

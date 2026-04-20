@@ -27,6 +27,7 @@ export function IMessageChat({
   userId,
   userName,
   userColor,
+  sessionId,
   disabled = false,
   disabledReason,
   pollMs = 1000,
@@ -34,6 +35,7 @@ export function IMessageChat({
   userId: string;
   userName?: string;
   userColor?: string;
+  sessionId?: string;
   disabled?: boolean;
   disabledReason?: string;
   pollMs?: number;
@@ -48,7 +50,7 @@ export function IMessageChat({
     let stop = false;
     async function tick() {
       try {
-        const rows = await api.thread(userId);
+        const rows = await api.thread(userId, sessionId);
         if (!stop) setMessages(rows);
       } catch {
         // ignore, retry next tick
@@ -60,7 +62,7 @@ export function IMessageChat({
       stop = true;
       clearInterval(t);
     };
-  }, [userId, pollMs]);
+  }, [userId, sessionId, pollMs]);
 
   useEffect(() => {
     if (scrollRef.current) {

@@ -38,6 +38,7 @@ from afters.models import (
     DateRecord,
     FeedbackTrainingRow,
     Match,
+    Message,
     ParticipantDebrief,
     User,
     UserProfile,
@@ -558,6 +559,33 @@ def _choices(outcome: str) -> tuple[str | None, str | None]:
     return mapping[outcome]
 
 
+REPLY_POOL: dict[str, list[str]] = {
+    "again": [
+        "honestly had the best time. would 100% see them again",
+        "super good vibe. laughed more than i expected. want another one for sure",
+        "they're really thoughtful and we clicked. id go again",
+        "so much fun. would love a second date, somewhere we can keep talking",
+        "we talked for three hours and it flew by. definitely a yes for round two",
+        "genuinely great energy. i'd go out with them again for sure",
+        "felt really comfortable around them. yes to another one",
+    ],
+    "group": [
+        "they were genuinely fun but more of a friend vibe. group hang would be perfect",
+        "liked them a lot but not quite second-date energy. down for a group thing",
+        "honestly a group vibe is where i land. great person, just not romantic for me",
+        "i vibe with them as a friend. would love to keep meeting them in a group",
+        "nice time but more platonic for me. group hang yes, one-on-one pass",
+    ],
+    "pass": [
+        "nice enough but no spark for me. gonna pass on a second one",
+        "not feeling it romantically. they were kind though",
+        "i think we were on different wavelengths. passing on this",
+        "wasnt a match for me. no hard feelings, just not the one",
+        "they were sweet but it felt more like a friendly coffee than a date",
+    ],
+}
+
+
 def _build_participant(
     user_id: str,
     choice: str | None,
@@ -578,6 +606,7 @@ def _build_participant(
         interest = rnd.randint(2, 5)
         moments = rnd.sample(MOMENTS_POOL, 1)
         concerns = rnd.sample(CONCERNS_POOL, rnd.randint(1, 2))
+    reply_text = rnd.choice(REPLY_POOL[choice])
     return ParticipantDebrief(
         user_id=user_id,
         response_state="revealed",
@@ -588,9 +617,132 @@ def _build_participant(
         wants_second_date=choice == "again",
         willing_to_group_hang=choice in ("again", "group"),
         free_text_note=f"read as a {choice} outcome from their reply",
-        raw_reply_text="[historical, synthesized]",
+        raw_reply_text=reply_text,
         submitted_at=reply_at,
     )
+
+
+def _seed_messages_for_session(
+    *,
+    session: AftersSession,
+    user_a: User,
+    user_b: User,
+) -> list[Message]:
+    """Generate a believable chat thread for a historical session: the outbound
+    debrief prompt to each user, each user's inbound reply, and an outcome-
+    specific outbound confirmation. Keeps both chat panes populated on the
+    session detail view for seeded data, not just for live scenario runs."""
+    msgs: list[Message] = []
+    users_and_participants = list(zip((user_a, user_b), session.participants, strict=True))
+
+    for user, participant in users_and_participants:
+        first = user.name.split()[0].lower()
+        msgs.append(
+            Message(
+                user_id=user.id,
+                direction="outbound",
+                body=(
+                    f"hey {first}. quick check in from afters. how did it go? "
+                    "you can reply three ways: again (want another date), "
+                    "group (chill group hang), or pass (no second date). "
+                    "or just talk to me in your own words and i'll read between the lines."
+                ),
+                session_id=session.id,
+                created_at=session.created_at,
+            )
+        )
+
+    for user, participant in users_and_participants:
+        if participant.response_state == "pending" or not participant.raw_reply_text:
+            continue
+        msgs.append(
+            Message(
+                user_id=user.id,
+                direction="inbound",
+                body=participant.raw_reply_text,
+                session_id=session.id,
+                created_at=participant.submitted_at or session.created_at,
+            )
+        )
+
+    outcome = session.resolved_outcome
+    resolved_at = session.resolved_at or session.created_at
+    if outcome == "both_again":
+        for user, _ in users_and_participants:
+            first = user.name.split()[0].lower()
+            msgs.append(
+                Message(
+                    user_id=user.id,
+                    direction="outbound",
+                    body=(
+                        f"good news {first}. they also said yes to a second one. "
+                        "we'll send the venue and time in the next message."
+                    ),
+                    session_id=session.id,
+                    created_at=resolved_at,
+                )
+            )
+    elif outcome == "both_group":
+        for user, _ in users_and_participants:
+            first = user.name.split()[0].lower()
+            msgs.append(
+                Message(
+                    user_id=user.id,
+                    direction="outbound",
+                    body=(
+                        f"nice one {first}. we put you both in the group queue. "
+                        "you'll hear from us within a week once we line up 4 to 6 people "
+                        "with a similar vibe."
+                    ),
+                    session_id=session.id,
+                    created_at=resolved_at,
+                )
+            )
+    elif outcome == "both_pass":
+        for user, _ in users_and_participants:
+            first = user.name.split()[0].lower()
+            msgs.append(
+                Message(
+                    user_id=user.id,
+                    direction="outbound",
+                    body=(
+                        f"thanks for letting us know {first}. "
+                        "we'll find you someone better suited next wednesday."
+                    ),
+                    session_id=session.id,
+                    created_at=resolved_at,
+                )
+            )
+    elif outcome == "timed_out":
+        responder = next(
+            (
+                user
+                for user, p in users_and_participants
+                if p.response_state != "pending"
+            ),
+            None,
+        )
+        if responder is not None:
+            first = responder.name.split()[0].lower()
+            msgs.append(
+                Message(
+                    user_id=responder.id,
+                    direction="outbound",
+                    body=(
+                        f"hey {first}. the other person didn't get back to us this week. "
+                        "we called it here so you aren't left hanging. next wednesday we'll "
+                        "line up someone who follows up faster."
+                    ),
+                    session_id=session.id,
+                    created_at=resolved_at,
+                )
+            )
+    # Asymmetric cases leave the chat at prompt + replies with no outbound
+    # confirmation. Live, those route through the Closure Agent review queue
+    # and the reviewer approves (or edits, or rejects) before anything sends.
+    # Seeded asymmetric sessions stay in that pre-send state.
+
+    return msgs
 
 
 async def run_seed(*, clear_core: bool = True, seed_rng: int = 42) -> dict:
@@ -705,6 +857,7 @@ async def run_seed(*, clear_core: bool = True, seed_rng: int = 42) -> dict:
     hist_matches: list[Match] = []
     hist_dates: list[DateRecord] = []
     hist_sessions: list[AftersSession] = []
+    hist_messages: list[Message] = []
     feedback_rows: list[FeedbackTrainingRow] = []
 
     for outcome, campus in zip(OUTCOME_DIST, campus_targets, strict=True):
@@ -766,6 +919,9 @@ async def run_seed(*, clear_core: bool = True, seed_rng: int = 42) -> dict:
             updated_at=resolved_at,
         )
         hist_sessions.append(session)
+        hist_messages.extend(
+            _seed_messages_for_session(session=session, user_a=a, user_b=b)
+        )
 
         feedback_rows.append(
             FeedbackTrainingRow(
@@ -796,6 +952,10 @@ async def run_seed(*, clear_core: bool = True, seed_rng: int = 42) -> dict:
     await db[collections.sessions].insert_many(
         [s.model_dump(by_alias=True) for s in hist_sessions]
     )
+    if hist_messages:
+        await db[collections.messages].insert_many(
+            [m.model_dump(by_alias=True) for m in hist_messages]
+        )
 
     with FEEDBACK_FILE.open("a") as fh:
         for row in feedback_rows:
@@ -807,6 +967,7 @@ async def run_seed(*, clear_core: bool = True, seed_rng: int = 42) -> dict:
         "current_matches": len(current_matches),
         "current_dates": len(current_dates),
         "historical_sessions": len(hist_sessions),
+        "historical_messages": len(hist_messages),
         "feedback_rows": len(feedback_rows),
         "outcome_mix": {
             o: sum(1 for s in hist_sessions if s.resolved_outcome == o)

@@ -18,12 +18,22 @@ router = APIRouter(tags=["messages"])
 
 
 @router.get("/messages/{user_id}")
-async def list_thread(user_id: str, limit: int = 200):
+async def list_thread(
+    user_id: str,
+    limit: int = 200,
+    session_id: str | None = None,
+):
+    """Thread for a user. If session_id is provided, returns only messages
+    tagged with that session (useful on the session detail view so a user
+    who's been in multiple sessions doesn't show cross-session messages)."""
     db = get_db()
+    q: dict = {"user_id": user_id}
+    if session_id:
+        q["session_id"] = session_id
     rows = [
         jsonable(r)
         async for r in db[collections.messages]
-        .find({"user_id": user_id})
+        .find(q)
         .sort("created_at", 1)
         .limit(limit)
     ]

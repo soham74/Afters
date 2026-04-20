@@ -95,8 +95,10 @@ export const api = {
     _fetch<any>(`${ORCHESTRATOR_BASE}/api/closure/${id}/reject`, {
       method: "POST",
     }),
-  thread: (userId: string) =>
-    _fetch<any[]>(`${ORCHESTRATOR_BASE}/api/messages/${userId}`),
+  thread: (userId: string, sessionId?: string) => {
+    const qs = sessionId ? `?session_id=${encodeURIComponent(sessionId)}` : "";
+    return _fetch<any[]>(`${ORCHESTRATOR_BASE}/api/messages/${userId}${qs}`);
+  },
   listUsers: () => _fetch<any[]>(`${ORCHESTRATOR_BASE}/api/users`),
   getUser: (id: string) => _fetch<any>(`${ORCHESTRATOR_BASE}/api/users/${id}`),
 };

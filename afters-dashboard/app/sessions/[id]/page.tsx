@@ -280,6 +280,7 @@ export default function SessionDetailPage({
                   userId={p.user_id}
                   userName={p.user.name}
                   userColor={p.user.avatar_color}
+                  sessionId={session._id}
                   disabled={!canType}
                   disabledReason={disabledReason}
                 />

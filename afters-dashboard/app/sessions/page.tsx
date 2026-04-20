@@ -94,7 +94,7 @@ export default function SessionsPage() {
         </CardContent>
       </Card>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           variant={filterState == null ? "subtle" : "ghost"}
           size="sm"

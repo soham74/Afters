@@ -12,7 +12,7 @@ Open the dashboard at `http://localhost:3000/sessions`. Six buttons up top, labe
 - **Both Group**: rule-based batcher queues the pair for a group hang.
 - **Asymmetric: Again vs Pass**: Closure Agent drafts a dignified message, routed to the human-in-the-loop review queue on the session detail page. Approve / edit / reject, with one regeneration budget and a deterministic fallback on the second reject.
 - **Asymmetric: Again vs Group**: same closure flow, plus the Again party is offered a group reroute.
-- **Timeout**: only one user replies. After `TIMEOUT_SECONDS_OVERRIDE` seconds (default 60) the Timeout Watcher flips the session and sends a soft-close message to the responder.
+- **Timeout**: only one user replies. After `TIMEOUT_SECONDS_OVERRIDE` seconds (default 240, i.e. 4 minutes) the Timeout Watcher flips the session and sends a soft-close message to the responder.
 - **Reset demo data**: wipes sessions, traces, messages, closure reviews, second dates, and the group queue, then re-runs the seed. Users, matches, dates, and venues come back in full.
 
 For the last 30 seconds of the video, open `/experiments` for the static A/B design write-up.
@@ -77,7 +77,7 @@ Open `http://localhost:3000`. Click **Both Again**. Watch the chat animate, watc
 
 Everything needed is in `.env.example`. Copy to `.env` and fill `ANTHROPIC_API_KEY`. Two knobs matter for the demo:
 
-- `TIMEOUT_SECONDS_OVERRIDE=60`. Compresses the 48-hour mutual-reveal timeout so the Timeout scenario fires live. In production this is unset and the 48h default applies.
+- `TIMEOUT_SECONDS_OVERRIDE=240`. Compresses the 48-hour mutual-reveal timeout to 4 minutes so a live session that goes unanswered resolves to `timed_out` inside the demo window. In production this is unset and the 48h default applies.
 - `MOCK_LLM=false`. Flip to `true` to run scenarios fully offline against registered mocks (useful if the network is flaky). Real traces still write; the `model` field becomes `mock:claude-*`.
 
 ### Evals

@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379"
 
     mock_llm: bool = False
-    timeout_seconds_override: int = 60
+    timeout_seconds_override: int = 240
 
     messaging_base_url: str = "http://localhost:3001"
     orchestrator_base_url: str = "http://localhost:8000"

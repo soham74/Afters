@@ -103,6 +103,7 @@ export function ScenarioButtons() {
           className="border-success text-success hover:bg-success/10 hover:text-success"
           disabled={busy != null}
           onClick={startLive}
+          title="picks two free same-campus users and opens a blank session you drive by typing into either chat pane"
         >
           {busy === "live" ? (
             <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
@@ -125,6 +126,12 @@ export function ScenarioButtons() {
           )}
           Reset demo data
         </Button>
+      </div>
+      <div className="text-[11px] text-ink-faint px-1 leading-snug">
+        live mode: pick a fresh pair, type their replies yourself. if no one
+        responds within 4 minutes the session resolves to{" "}
+        <span className="font-mono">timed_out</span> (simulated ghosting).
+        in production the real timeout is 48 hours.
       </div>
       {lastResult && (
         <div className="text-xs text-ink-muted px-1 font-mono">{lastResult}</div>

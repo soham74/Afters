@@ -27,7 +27,7 @@ _timeout_task: asyncio.Task | None = None
 
 async def _timeout_loop():
     """Poll every 5 seconds for overdue sessions. Cheap, and matches the
-    TIMEOUT_SECONDS_OVERRIDE=60s demo granularity comfortably."""
+    TIMEOUT_SECONDS_OVERRIDE=240s demo granularity comfortably."""
     while True:
         try:
             await run_timeout_pass()

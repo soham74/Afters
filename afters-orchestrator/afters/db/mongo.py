@@ -68,13 +68,22 @@ def jsonable(obj: Any) -> Any:
 
 
 async def ensure_indexes() -> None:
+    """Create indexes. Non-fatal if they fail (e.g. disk pressure on hosted Mongo)."""
     db = get_db()
-    await db[Collections.sessions].create_index("date_id", unique=True)
-    await db[Collections.sessions].create_index("state")
-    await db[Collections.sessions].create_index("campus")
-    await db[Collections.sessions].create_index("created_at")
-    await db[Collections.traces].create_index("session_id")
-    await db[Collections.traces].create_index("created_at")
-    await db[Collections.messages].create_index([("user_id", 1), ("created_at", -1)])
-    await db[Collections.group_queue].create_index([("campus", 1), ("status", 1)])
-    await db[Collections.closure_reviews].create_index("session_id")
+    indexes = [
+        (Collections.sessions, "date_id", {"unique": True}),
+        (Collections.sessions, "state", {}),
+        (Collections.sessions, "campus", {}),
+        (Collections.sessions, "created_at", {}),
+        (Collections.traces, "session_id", {}),
+        (Collections.traces, "created_at", {}),
+        (Collections.messages, [("user_id", 1), ("created_at", -1)], {}),
+        (Collections.group_queue, [("campus", 1), ("status", 1)], {}),
+        (Collections.closure_reviews, "session_id", {}),
+    ]
+    for collection, keys, opts in indexes:
+        try:
+            await db[collection].create_index(keys, **opts)
+        except Exception as e:
+            # index creation is best-effort. app stays up even if Mongo is disk-constrained.
+            print(f"[ensure_indexes] skipping index on {collection}: {e}")

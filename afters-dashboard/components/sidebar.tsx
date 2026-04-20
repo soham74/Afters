@@ -7,7 +7,6 @@ import {
   MessageSquare,
   Activity,
   BarChart3,
-  FlaskConical,
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,7 +16,6 @@ const NAV = [
   { href: "/chats", label: "Chats", icon: MessageSquare },
   { href: "/traces", label: "Agent Traces", icon: Activity },
   { href: "/metrics", label: "Metrics", icon: BarChart3 },
-  { href: "/experiments", label: "Experiments", icon: FlaskConical },
 ];
 
 export function Sidebar() {

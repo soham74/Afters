@@ -52,7 +52,6 @@ export default function MetricsPage() {
         <h1 className="text-2xl font-semibold tracking-tight">Metrics</h1>
         <p className="text-sm text-ink-muted mt-1">
           live over the seeded cohort plus any sessions triggered this session.
-          targets in the A/B design on /experiments.
         </p>
       </header>
 

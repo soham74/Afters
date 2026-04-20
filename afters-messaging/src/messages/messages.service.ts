@@ -32,7 +32,10 @@ export class MessagesService implements OnModuleInit, OnModuleDestroy {
     const uri = process.env.MONGODB_URI ?? "mongodb://localhost:27017/afters";
     this.mongo = new MongoClient(uri);
     await this.mongo.connect();
-    const dbName = uri.split("/").pop() || "afters";
+    // Hardcoded for the deploy. URI-segment parsing breaks on Railway-style
+    // mongodb URIs that have no db path; MONGO_DB_NAME_OVERRIDE mirrors the
+    // env var the orchestrator already reads, so both services share one knob.
+    const dbName = process.env.MONGO_DB_NAME_OVERRIDE || "afters";
     this.messages = this.mongo.db(dbName).collection<MessageRecord>("messages");
     await this.messages.createIndex({ user_id: 1, created_at: -1 });
 
